@@ -1,4 +1,4 @@
-package com.jvalenc.stock.filter;
+package com.jvalenc.stock.util;
 
 /**
  * Created by jonat on 11/12/2017.
@@ -10,6 +10,11 @@ public class Query {
     private Interval interval;
     private String symbol;
     private SeriesType seriesType;
+
+    //validation
+    public Boolean isValid(){
+        return queryFunction != null && timePeriod != null && interval != null && symbol != null && seriesType != null;
+    }
 
     //setters and getters
     public QueryFunction getQueryFunction() {

@@ -1,4 +1,4 @@
-package com.jvalenc.stock.filter;
+package com.jvalenc.stock.util;
 
 /**
  * Created by jonat on 11/12/2017.
