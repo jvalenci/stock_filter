@@ -4,6 +4,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.jvalenc.stock.util.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -20,15 +21,26 @@ public class AlphaVantageWebClient {
     private Query query;
     private String request;
     private JsonObject response;
+    private static Logger logger = Logger.getLogger(AlphaVantageWebClient.class);
 
+    /**
+     *
+     * @param query
+     */
     public AlphaVantageWebClient(Query query){
+        logger.info("making webClient with passed in query");
+        logger.info("making ");
         this.query = query;
         if(this.query.isValid()) {
             buildUrl();
         }
     }
 
+    /**
+     * default constructor
+     */
     public AlphaVantageWebClient(){
+        logger.info("making webClient with default query");
         query = new Query();
         query.setInterval(Interval.DAILY);
         query.setQueryFunction(QueryFunction.SMA);
@@ -41,8 +53,11 @@ public class AlphaVantageWebClient {
         }
     }
 
+    /**
+     * Builds the url with given query from constructor
+     */
     private void buildUrl(){
-
+        logger.info("building URL from query");
         if (query != null) {
 
             StringBuilder sb = new StringBuilder();
@@ -63,6 +78,9 @@ public class AlphaVantageWebClient {
         }
     }
 
+    /**
+     * Sends the request and gets response
+     */
     public void sendRequest(){
 
         if(request != null) {
@@ -70,11 +88,15 @@ public class AlphaVantageWebClient {
                 URL url = new URL(request);
                 response = Json.parse(IOUtils.toString(url, "UTF-8")).asObject();
             } catch (IOException e) {
-                System.err.println("There was an error with the request string: " + e.getMessage());
+                logger.error("There was an error with the request string: " + e.getMessage());
             }
         }
     }
 
+    /**
+     *
+     * @return response
+     */
     public JsonObject getResponse(){
         return response;
     }

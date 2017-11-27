@@ -6,6 +6,7 @@ import com.eclipsesource.json.JsonValue;
 import com.jvalenc.stock.util.*;
 import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -17,6 +18,7 @@ import java.net.URL;
 public class SimpleMovingAverageCrossover {
 
     public static void main(String[] args) {
+        Logger LOG = Logger.getLogger(SimpleMovingAverageCrossover.class);
 
         Query query = new Query();
         query.setSymbol("SPY");
@@ -31,6 +33,7 @@ public class SimpleMovingAverageCrossover {
         System.out.println(jsonObject.get("Technical Analysis: SMA"));
         JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
         System.out.println();
+
         //probably a good idea to have an object with date and sma attached then parse to be able to sort the dates.
         for (String value : jsonTechAna.names()) {
             String v = jsonTechAna.get(value).asObject().get("SMA").asString();

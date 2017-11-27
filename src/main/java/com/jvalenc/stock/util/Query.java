@@ -1,5 +1,7 @@
 package com.jvalenc.stock.util;
 
+import org.apache.log4j.Logger;
+
 /**
  * Created by jonat on 11/12/2017.
  */
@@ -10,6 +12,7 @@ public class Query {
     private Interval interval;
     private String symbol;
     private SeriesType seriesType;
+    private Logger logger = Logger.getLogger(Query.class);
 
     //validation
     public Boolean isValid(){
