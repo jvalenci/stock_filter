@@ -30,8 +30,11 @@ public class SimpleMovingAverageCrossover {
 
         //send the query to the web client
         AlphaVantageWebClient alphaVantageWebClient = new AlphaVantageWebClient(query);
-        alphaVantageWebClient.sendRequest();
-
+        try {
+            alphaVantageWebClient.sendRequest();
+        }catch (InterruptedException ex){
+            LOG.error(ex);
+        }
         //todo maker response parser
         //parse the response
         JsonObject jsonObject = alphaVantageWebClient.getResponse();

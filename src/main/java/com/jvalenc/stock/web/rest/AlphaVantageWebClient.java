@@ -84,15 +84,18 @@ public class AlphaVantageWebClient {
     /**
      * Sends the request and gets response
      */
-    public void sendRequest(){
+    public void sendRequest() throws InterruptedException{
 
         if(request != null) {
+            logger.info("Sending request to AlphaVantage");
             try {
                 URL url = new URL(request);
                 response = Json.parse(IOUtils.toString(url, "UTF-8")).asObject();
             } catch (IOException e) {
                 logger.error("There was an error with the request string: " + e.getMessage());
             }
+            //API requirements to have a one sec interval between calls.
+            Thread.sleep(1000);
         }
     }
 

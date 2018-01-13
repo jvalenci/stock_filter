@@ -31,6 +31,7 @@ public class StockTicker {
      */
     public void setTicker(String ticker) {
         if(ticker.contains("^")) {
+            //Checks if there is one or more characters after the "^".
             Pattern patternWordsAfter = Pattern.compile(".*\\^.+");
            //Pattern patternJustCaret = Pattern.compile("\\w\\^");
             //Matcher m1 = patternJustCaret.matcher(ticker);
