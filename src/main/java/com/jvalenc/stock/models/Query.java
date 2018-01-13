@@ -1,5 +1,9 @@
-package com.jvalenc.stock.util;
+package com.jvalenc.stock.models;
 
+import com.jvalenc.stock.util.enums.Interval;
+import com.jvalenc.stock.util.enums.QueryFunction;
+import com.jvalenc.stock.util.enums.SeriesType;
+import com.jvalenc.stock.util.enums.TimePeriod;
 import org.apache.log4j.Logger;
 
 /**

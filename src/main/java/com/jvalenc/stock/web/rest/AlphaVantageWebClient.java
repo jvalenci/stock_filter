@@ -2,7 +2,11 @@ package com.jvalenc.stock.web.rest;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.jvalenc.stock.util.*;
+import com.jvalenc.stock.models.Query;
+import com.jvalenc.stock.util.enums.Interval;
+import com.jvalenc.stock.util.enums.QueryFunction;
+import com.jvalenc.stock.util.enums.SeriesType;
+import com.jvalenc.stock.util.enums.TimePeriod;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
@@ -29,7 +33,6 @@ public class AlphaVantageWebClient {
      */
     public AlphaVantageWebClient(Query query){
         logger.info("making webClient with passed in query");
-        logger.info("making ");
         this.query = query;
         if(this.query.isValid()) {
             buildUrl();

@@ -1,16 +1,13 @@
 package com.jvalenc.stock.filter;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.jvalenc.stock.util.*;
+import com.jvalenc.stock.models.Query;
+import com.jvalenc.stock.util.enums.Interval;
+import com.jvalenc.stock.util.enums.QueryFunction;
+import com.jvalenc.stock.util.enums.SeriesType;
+import com.jvalenc.stock.util.enums.TimePeriod;
 import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Created by jonat on 11/12/2017.
@@ -20,6 +17,10 @@ public class SimpleMovingAverageCrossover {
     public static void main(String[] args) {
         Logger LOG = Logger.getLogger(SimpleMovingAverageCrossover.class);
 
+        //csv reader
+        //todo make csv reader
+        //build query
+        //todo make query builder
         Query query = new Query();
         query.setSymbol("SPY");
         query.setQueryFunction(QueryFunction.SMA);
@@ -27,8 +28,12 @@ public class SimpleMovingAverageCrossover {
         query.setTimePeriod(TimePeriod.EIGHT);
         query.setSeriesType(SeriesType.CLOSE);
 
+        //send the query to the web client
         AlphaVantageWebClient alphaVantageWebClient = new AlphaVantageWebClient(query);
         alphaVantageWebClient.sendRequest();
+
+        //todo maker response parser
+        //parse the response
         JsonObject jsonObject = alphaVantageWebClient.getResponse();
         System.out.println(jsonObject.get("Technical Analysis: SMA"));
         JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();

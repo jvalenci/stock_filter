@@ -1,4 +1,4 @@
-package com.jvalenc.stock.util;
+package com.jvalenc.stock.util.enums;
 
 /**
  * Created by jonat on 11/12/2017.
