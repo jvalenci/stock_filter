@@ -4,6 +4,7 @@ import com.eclipsesource.json.JsonObject;
 import com.jvalenc.stock.csv.reader.CsvReader;
 import com.jvalenc.stock.csv.reader.ICsvReader;
 import com.jvalenc.stock.models.QueryCriteria;
+import com.jvalenc.stock.models.SMADataPoint;
 import com.jvalenc.stock.models.StockSymbol;
 import com.jvalenc.stock.util.enums.Interval;
 import com.jvalenc.stock.util.enums.QueryFunction;
@@ -76,22 +77,33 @@ public class SimpleMovingAverageCrossover {
     }
 
     private static void parseResponse(List<JsonObject> response){
-        //todo maker response parser
+        LOG.info("parsing the Response");
+        List< List<SMADataPoint> > dataPoints = new ArrayList<>();
         //parse the response
         response.forEach(
                 jsonObject -> {
-
-                    System.out.println(jsonObject.get("Technical Analysis: SMA"));
+                    List<SMADataPoint> data = new ArrayList<SMADataPoint>();
+                    LOG.info(jsonObject.get("Technical Analysis: SMA"));
                     JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
-                    System.out.println();
 
-                    //probably a good idea to have an object with date and sma attached then parse to be able to sort the dates.
-                    for (String value : jsonTechAna.names()) {
-                        String v = jsonTechAna.get(value).asObject().get("SMA").asString();
-                        System.out.println(v);
+                    for(int i = 0; i < 5; i++){
+                        SMADataPoint point = new SMADataPoint();
+                        String timeStamp = jsonTechAna.names().get(i);
+                        String sma = jsonTechAna.get(timeStamp).asObject().get("SMA").asString();
+                        point.setTimeStamp(timeStamp);
+                        point.setSimpleMovingAverage(Double.parseDouble(sma));
+                        LOG.info(timeStamp + " : " + sma);
+                        data.add(point);
                     }
+                    dataPoints.add(data);
                 }
         );
+        analysis(dataPoints);
+
+    }
+
+    private static void analysis(List< List<SMADataPoint> > data){
+
     }
 
     public static void main(String[] args) {
