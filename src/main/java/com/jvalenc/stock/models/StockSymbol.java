@@ -1,13 +1,10 @@
 package com.jvalenc.stock.models;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Created by jonat on 1/13/2018.
  */
 public class StockSymbol {
-    private String ticker;
+    private String symbol;
 
     /**
      * @return
@@ -15,39 +12,34 @@ public class StockSymbol {
     @Override
     public String toString() {
         return "StockSymbol{" +
-                "ticker='" + ticker + '\'' +
+                "symbol='" + symbol + '\'' +
                 '}';
     }
 
     /**
      * @return
      */
-    public String getTicker() {
-        return ticker;
+    public String getSymbol() {
+        return symbol;
     }
 
     /**
-     * @param ticker
+     * @param symbol
      */
-    public void setTicker(String ticker) {
-        if(ticker.contains("^")) {
-            //Checks if there is one or more characters after the "^".
-            Pattern patternWordsAfter = Pattern.compile(".*\\^.+");
-           //Pattern patternJustCaret = Pattern.compile("\\w\\^");
-            //Matcher m1 = patternJustCaret.matcher(ticker);
-            Matcher m2 = patternWordsAfter.matcher(ticker);
-            boolean b = m2.matches();
-            ticker = b? ticker.replace("^",".PR.") : ticker.replace("^", ".PR");
+    public void setSymbol(String symbol) {
+        //check for a caret and parse accordingly, the caret comes from the stock list I pulled up.
+        if(symbol.contains("^")) {
+            symbol = symbol.matches(".*\\^.+")? symbol.replace("^",".PR.") : symbol.replace("^", ".PR");
         }
-        this.ticker = ticker;
+        this.symbol = symbol;
     }
 
     /**
      *
-     * @param ticker
+     * @param symbol
      */
-    public StockSymbol(String ticker) {
+    public StockSymbol(String symbol) {
 
-        setTicker(ticker);
+        setSymbol(symbol);
     }
 }

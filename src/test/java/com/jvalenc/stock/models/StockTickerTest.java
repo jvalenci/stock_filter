@@ -28,10 +28,10 @@ public class StockTickerTest {
         StockSymbol stockTicker4 = new StockSymbol(testString4);
 
         //Assert
-        Assert.assertTrue(stockTicker.getTicker().equals(expected));
-        Assert.assertTrue(stockTicker2.getTicker().equals(expected2));
-        Assert.assertTrue(stockTicker3.getTicker().equals(expected3));
-        Assert.assertTrue(stockTicker4.getTicker().equals(expected4));
+        Assert.assertTrue(stockTicker.getSymbol().equals(expected));
+        Assert.assertTrue(stockTicker2.getSymbol().equals(expected2));
+        Assert.assertTrue(stockTicker3.getSymbol().equals(expected3));
+        Assert.assertTrue(stockTicker4.getSymbol().equals(expected4));
     }
 
 }
