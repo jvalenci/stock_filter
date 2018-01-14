@@ -9,9 +9,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by jonat on 1/13/2018.
@@ -30,9 +28,9 @@ public class CsvReader implements ICsvReader<StockSymbol> {
     private final String STOCK_SYMBOL = "Symbol";
 
     @Override
-    public List<StockSymbol> readCsvDirectory(String directoyfileNmae){
+    public Set<StockSymbol> readCsvDirectory(String directoyfileNmae){
         File file = new File(directoyfileNmae);
-        List<StockSymbol> stockTickers = new ArrayList<>();
+        Set<StockSymbol> stockTickers = new HashSet<>();
         if(file.isDirectory() && file.listFiles().length > 0){
             Arrays.stream(file.listFiles()).forEach( path->
                     stockTickers.addAll(readCsvFile(path.getAbsolutePath())));

@@ -31,7 +31,7 @@ public class StockSymbol {
         if(symbol.contains("^")) {
             symbol = symbol.matches(".*\\^.+")? symbol.replace("^",".PR.") : symbol.replace("^", ".PR");
         }
-        this.symbol = symbol;
+        this.symbol = symbol.trim();
     }
 
     /**

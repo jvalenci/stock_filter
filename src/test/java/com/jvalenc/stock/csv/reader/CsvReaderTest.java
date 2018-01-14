@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jonat on 1/13/2018.
@@ -18,7 +19,7 @@ public class CsvReaderTest {
         CsvReader csvReader = new CsvReader();
 
         //Act
-        List<StockSymbol> stockTickers = csvReader.readCsvDirectory(directoryFileName);
+        Set<StockSymbol> stockTickers = csvReader.readCsvDirectory(directoryFileName);
 
         //Assert
         Assert.assertTrue(stockTickers.size() > 0);

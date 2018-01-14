@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jonat on 11/12/2017.
@@ -30,7 +31,7 @@ public class SimpleMovingAverageCrossover {
         return query;
     }
 
-    private static List<StockSymbol> getStockSymbols(ICsvReader<StockSymbol> csvReader,String directoryFileName){
+    private static Set<StockSymbol> getStockSymbols(ICsvReader<StockSymbol> csvReader, String directoryFileName){
         return csvReader.readCsvDirectory(directoryFileName);
     }
 
@@ -43,7 +44,7 @@ public class SimpleMovingAverageCrossover {
         }
 
         //List of all the stock symbols
-        List<StockSymbol> stockSymbols = getStockSymbols(new CsvReader(), args[0]);
+        Set<StockSymbol> stockSymbols = getStockSymbols(new CsvReader(), args[0]);
 
         stockSymbols.forEach(
                 symbol -> {
