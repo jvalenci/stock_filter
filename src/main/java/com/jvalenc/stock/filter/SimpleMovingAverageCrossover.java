@@ -60,21 +60,31 @@ public class SimpleMovingAverageCrossover {
 
     /**
      * @param webClient
-     * @param queries
      * @return
      */
-    private static JsonObject webService(IWebClient<JsonObject> webClient, List<QueryCriteria> queries){
+    private static List<JsonObject> webService(IWebClient<JsonObject> webClient){
         //send the query to the web client
-        webClient = new AlphaVantageWebClient(query);
         try {
-            alphaVantageWebClient.sendRequest();
-        }catch (InterruptedException ex){
+            webClient.sendRequest();
+        }catch (Exception ex){
             LOG.error(ex);
         }
+        return webClient.getResponses();
     }
 
-    private static void responseParser(JsonObject response){
+    private static void parseResponse(List<JsonObject> response){
+        //todo maker response parser
+        //parse the response
+        JsonObject jsonObject = alphaVantageWebClient.getResponse();
+        System.out.println(jsonObject.get("Technical Analysis: SMA"));
+        JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
+        System.out.println();
 
+        //probably a good idea to have an object with date and sma attached then parse to be able to sort the dates.
+        for (String value : jsonTechAna.names()) {
+            String v = jsonTechAna.get(value).asObject().get("SMA").asString();
+            System.out.println(v);
+        }
     }
 
     public static void main(String[] args) {
@@ -91,21 +101,13 @@ public class SimpleMovingAverageCrossover {
                 symbol -> {
 
                     //build query
-                    List<QueryCriteria> query = queryBuilder(symbol);
+                    List<QueryCriteria> queries = queryBuilder(symbol);
 
+                    //make the call and get a response
+                    List<JsonObject> response = webService(new AlphaVantageWebClient(queries));
 
-                    //todo maker response parser
-                    //parse the response
-                    JsonObject jsonObject = alphaVantageWebClient.getResponse();
-                    System.out.println(jsonObject.get("Technical Analysis: SMA"));
-                    JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
-                    System.out.println();
-
-                    //probably a good idea to have an object with date and sma attached then parse to be able to sort the dates.
-                    for (String value : jsonTechAna.names()) {
-                        String v = jsonTechAna.get(value).asObject().get("SMA").asString();
-                        System.out.println(v);
-                    }
+                    //parse the response to find where the cross over occurred
+                    parseResponse(response);
                 }
         );
     }
