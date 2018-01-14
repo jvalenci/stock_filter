@@ -39,11 +39,14 @@ public class SimpleMovingAverageCrossover {
         query.setInterval(Interval.DAILY);
         query.setTimePeriod(TimePeriod.EIGHT);
         query.setSeriesType(SeriesType.CLOSE);
-
         queries.add(query);
 
+        query = new QueryCriteria();
+        query.setSymbol(stockSymbol.getSymbol());
+        query.setQueryFunction(QueryFunction.SMA);
+        query.setInterval(Interval.DAILY);
         query.setTimePeriod(TimePeriod.TWENTY_THREE);
-
+        query.setSeriesType(SeriesType.CLOSE);
         queries.add(query);
 
         return queries;
@@ -75,16 +78,20 @@ public class SimpleMovingAverageCrossover {
     private static void parseResponse(List<JsonObject> response){
         //todo maker response parser
         //parse the response
-        JsonObject jsonObject = alphaVantageWebClient.getResponse();
-        System.out.println(jsonObject.get("Technical Analysis: SMA"));
-        JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
-        System.out.println();
+        response.forEach(
+                jsonObject -> {
 
-        //probably a good idea to have an object with date and sma attached then parse to be able to sort the dates.
-        for (String value : jsonTechAna.names()) {
-            String v = jsonTechAna.get(value).asObject().get("SMA").asString();
-            System.out.println(v);
-        }
+                    System.out.println(jsonObject.get("Technical Analysis: SMA"));
+                    JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
+                    System.out.println();
+
+                    //probably a good idea to have an object with date and sma attached then parse to be able to sort the dates.
+                    for (String value : jsonTechAna.names()) {
+                        String v = jsonTechAna.get(value).asObject().get("SMA").asString();
+                        System.out.println(v);
+                    }
+                }
+        );
     }
 
     public static void main(String[] args) {
