@@ -76,6 +76,11 @@ public class SimpleMovingAverageCrossover {
         return webClient.getResponses();
     }
 
+    /**Parsing the response, I'm only interested in the first
+     * 5 days since there was a potential crossover...Really I'm capturing
+     * when the lines first intersect.
+     * @param response
+     */
     private static void parseResponse(List<JsonObject> response){
         LOG.info("parsing the Response");
         List< List<SMADataPoint> > dataPoints = new ArrayList<>();
@@ -98,12 +103,12 @@ public class SimpleMovingAverageCrossover {
                     dataPoints.add(data);
                 }
         );
-        analysis(dataPoints);
+        analyseForIntersection(dataPoints);
 
     }
 
-    private static void analysis(List< List<SMADataPoint> > data){
-
+    private static void analyseForIntersection(List< List<SMADataPoint> > data){
+        //Todo find out how to examine both data sets and find the intersect within 0.01. Save off the symbol and write to maybe csv or email to myself.
     }
 
     public static void main(String[] args) {
