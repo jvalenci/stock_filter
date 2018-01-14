@@ -109,6 +109,19 @@ public class SimpleMovingAverageCrossover {
 
     private static void analyseForIntersection(List< List<SMADataPoint> > data){
         //Todo find out how to examine both data sets and find the intersect within 0.01. Save off the symbol and write to maybe csv or email to myself.
+        if(data != null && data.size() == 2) {
+            List<SMADataPoint> firstDataPoints = data.get(0);
+            List<SMADataPoint> secondDataPoints = data.get(1);
+            List<SMADataPoint> symbolsThatHaveAnIntersection = new ArrayList<>();
+            final double THRESHOLD = 0.01;
+            double difference;
+            for ( int i = 0; i < firstDataPoints.size(); i++){
+                difference = Math.abs(firstDataPoints.get(i).getSimpleMovingAverage() - secondDataPoints.get(i).getSimpleMovingAverage());
+                if(difference <= THRESHOLD){
+
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
