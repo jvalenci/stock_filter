@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 /**
  * Created by jonat on 1/13/2018.
  */
-public class StockTicker {
+public class StockSymbol {
     private String ticker;
 
     /**
@@ -14,7 +14,7 @@ public class StockTicker {
      */
     @Override
     public String toString() {
-        return "StockTicker{" +
+        return "StockSymbol{" +
                 "ticker='" + ticker + '\'' +
                 '}';
     }
@@ -46,7 +46,7 @@ public class StockTicker {
      *
      * @param ticker
      */
-    public StockTicker(String ticker) {
+    public StockSymbol(String ticker) {
 
         setTicker(ticker);
     }

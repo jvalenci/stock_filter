@@ -1,6 +1,6 @@
 package com.jvalenc.stock.csv.reader;
 
-import com.jvalenc.stock.models.StockTicker;
+import com.jvalenc.stock.models.StockSymbol;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class CsvReaderTest {
         CsvReader csvReader = new CsvReader();
 
         //Act
-        List<StockTicker> stockTickers = csvReader.readCsvDirectory(directoryFileName);
+        List<StockSymbol> stockTickers = csvReader.readCsvDirectory(directoryFileName);
 
         //Assert
         Assert.assertTrue(stockTickers.size() > 0);

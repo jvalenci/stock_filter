@@ -1,6 +1,8 @@
 package com.jvalenc.stock.filter;
 
 import com.eclipsesource.json.JsonObject;
+import com.jvalenc.stock.csv.reader.CsvReader;
+import com.jvalenc.stock.csv.reader.ICsvReader;
 import com.jvalenc.stock.models.Query;
 import com.jvalenc.stock.util.enums.Interval;
 import com.jvalenc.stock.util.enums.QueryFunction;
@@ -14,11 +16,15 @@ import org.apache.log4j.Logger;
  */
 public class SimpleMovingAverageCrossover {
 
+//    private Query queryBuilder(String symbol){
+//
+//    }
+
     public static void main(String[] args) {
         Logger LOG = Logger.getLogger(SimpleMovingAverageCrossover.class);
 
         //csv reader
-        //todo make csv reader
+        ICsvReader csvReader = new CsvReader();
         //build query
         //todo make query builder
         Query query = new Query();

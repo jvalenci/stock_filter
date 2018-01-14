@@ -3,8 +3,6 @@ package com.jvalenc.stock.models;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by jonat on 1/13/2018.
  */
@@ -24,10 +22,10 @@ public class StockTickerTest {
         String expected4 = "AAPL.PR.AB";
 
         //Act
-        StockTicker stockTicker = new StockTicker(testString);
-        StockTicker stockTicker2 = new StockTicker(testString2);
-        StockTicker stockTicker3 = new StockTicker(testString3);
-        StockTicker stockTicker4 = new StockTicker(testString4);
+        StockSymbol stockTicker = new StockSymbol(testString);
+        StockSymbol stockTicker2 = new StockSymbol(testString2);
+        StockSymbol stockTicker3 = new StockSymbol(testString3);
+        StockSymbol stockTicker4 = new StockSymbol(testString4);
 
         //Assert
         Assert.assertTrue(stockTicker.getTicker().equals(expected));

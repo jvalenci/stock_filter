@@ -1,6 +1,6 @@
 package com.jvalenc.stock.csv.reader;
 
-import com.jvalenc.stock.models.StockTicker;
+import com.jvalenc.stock.models.StockSymbol;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by jonat on 1/13/2018.
  */
-public class CsvReader implements ICsvReader<StockTicker> {
+public class CsvReader implements ICsvReader<StockSymbol> {
 
     //Logger
     private Logger logger = Logger.getLogger(CsvReader.class);
@@ -27,12 +27,12 @@ public class CsvReader implements ICsvReader<StockTicker> {
     //CSV file header
     private final String[] FILE_HEADER_MAPPING = {"Symbol"};
     //Stock ticker attributes
-    private final String STOCK_TICKER = "Symbol";
+    private final String STOCK_SYMBOL = "Symbol";
 
     @Override
-    public List<StockTicker> readCsvDirectory(String directoyfileNmae){
+    public List<StockSymbol> readCsvDirectory(String directoyfileNmae){
         File file = new File(directoyfileNmae);
-        List<StockTicker> stockTickers = new ArrayList<>();
+        List<StockSymbol> stockTickers = new ArrayList<>();
         if(file.isDirectory() && file.listFiles().length > 0){
             Arrays.stream(file.listFiles()).forEach( path->
                     stockTickers.addAll(readCsvFile(path.getAbsolutePath())));
@@ -43,14 +43,14 @@ public class CsvReader implements ICsvReader<StockTicker> {
     /**
      * @param filename
      */
-    private List<StockTicker> readCsvFile(String filename){
+    private List<StockSymbol> readCsvFile(String filename){
 
         FileReader fileReader = null;
         CSVParser csvFileParser = null;
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
 
         //list of stock ticker to be filled by the csv
-        List<StockTicker> stockTickers = new ArrayList();
+        List<StockSymbol> stockTickers = new ArrayList();
 
         try{
 
@@ -66,7 +66,7 @@ public class CsvReader implements ICsvReader<StockTicker> {
             //read the csv file starting from the second position to skip the header
             for(int i = 1; i < csvRecords.size(); i++){
                 CSVRecord record = (CSVRecord)csvRecords.get(i);
-                StockTicker stockTicker = new StockTicker( record.get(STOCK_TICKER));
+                StockSymbol stockTicker = new StockSymbol( record.get(STOCK_SYMBOL));
                 stockTickers.add(stockTicker);
             }
         }catch (IOException ex){
