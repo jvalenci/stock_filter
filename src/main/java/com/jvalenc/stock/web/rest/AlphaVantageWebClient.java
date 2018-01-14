@@ -2,7 +2,7 @@ package com.jvalenc.stock.web.rest;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.jvalenc.stock.models.Query;
+import com.jvalenc.stock.models.QueryCriteria;
 import com.jvalenc.stock.util.enums.Interval;
 import com.jvalenc.stock.util.enums.QueryFunction;
 import com.jvalenc.stock.util.enums.SeriesType;
@@ -22,7 +22,7 @@ public class AlphaVantageWebClient implements IWebClient<JsonObject>{
     private String API_KEY = "B5E9IZNOFQ20MEF7";
     private String BASE_URL = "https://www.alphavantage.co/query?";
     private String AND = "&";
-    private Query query;
+    private QueryCriteria query;
     private String request;
     private JsonObject response;
     private static Logger logger = Logger.getLogger(AlphaVantageWebClient.class);
@@ -31,7 +31,7 @@ public class AlphaVantageWebClient implements IWebClient<JsonObject>{
      *
      * @param query
      */
-    public AlphaVantageWebClient(Query query){
+    public AlphaVantageWebClient(QueryCriteria query){
         logger.info("making webClient with passed in query");
         this.query = query;
         if(this.query.isValid()) {
@@ -44,7 +44,7 @@ public class AlphaVantageWebClient implements IWebClient<JsonObject>{
      */
     public AlphaVantageWebClient(){
         logger.info("making webClient with default query");
-        query = new Query();
+        query = new QueryCriteria();
         query.setInterval(Interval.DAILY);
         query.setQueryFunction(QueryFunction.SMA);
         query.setSymbol("SPY");

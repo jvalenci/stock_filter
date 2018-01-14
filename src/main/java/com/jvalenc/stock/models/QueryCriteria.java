@@ -9,14 +9,14 @@ import org.apache.log4j.Logger;
 /**
  * Created by jonat on 11/12/2017.
  */
-public class Query {
+public class QueryCriteria {
     //fields
     private QueryFunction queryFunction;
     private TimePeriod timePeriod;
     private Interval interval;
     private String symbol;
     private SeriesType seriesType;
-    private Logger logger = Logger.getLogger(Query.class);
+    private Logger logger = Logger.getLogger(QueryCriteria.class);
 
     //validation
     public Boolean isValid(){
