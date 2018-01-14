@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by jonat on 1/13/2018.
  */
-public class CsvReader {
+public class CsvReader implements ICsvReader<StockTicker> {
 
     //Logger
     private Logger logger = Logger.getLogger(CsvReader.class);
@@ -29,6 +29,7 @@ public class CsvReader {
     //Stock ticker attributes
     private final String STOCK_TICKER = "Symbol";
 
+    @Override
     public List<StockTicker> readCsvDirectory(String directoyfileNmae){
         File file = new File(directoyfileNmae);
         List<StockTicker> stockTickers = new ArrayList<>();
