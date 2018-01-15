@@ -15,6 +15,7 @@ import com.jvalenc.stock.web.rest.IWebClient;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,9 +29,9 @@ public class SimpleMovingAverageCrossover {
      * For the purpose of simple moving average cross over we need two queries.
      * one for the 8 sma the other for 23 sma.
      * @param stockSymbol
-     * @return
+     * @return List of query criteria to make the rest calls.
      */
-    private static List<QueryCriteria> queryBuilder(StockSymbol stockSymbol){
+    protected static List<QueryCriteria> queryBuilder(StockSymbol stockSymbol){
 
         List<QueryCriteria> queries = new ArrayList<>();
 
@@ -58,15 +59,15 @@ public class SimpleMovingAverageCrossover {
      * @param directoryFileName
      * @return
      */
-    private static Set<StockSymbol> getStockSymbols(ICsvReader<StockSymbol> csvReader, String directoryFileName){
+    protected static Set<StockSymbol> getStockSymbols(ICsvReader<StockSymbol> csvReader, String directoryFileName){
         return csvReader.readCsvDirectory(directoryFileName);
     }
 
     /**
      * @param webClient
-     * @return
+     * @return response
      */
-    private static List<JsonObject> webService(IWebClient<JsonObject> webClient){
+    protected static List<JsonObject> webService(IWebClient<JsonObject> webClient){
         //send the query to the web client
         try {
             webClient.sendRequest();
@@ -76,12 +77,12 @@ public class SimpleMovingAverageCrossover {
         return webClient.getResponses();
     }
 
-    /**Parsing the response, I'm only interested in the first
-     * 5 days since there was a potential crossover...Really I'm capturing
-     * when the lines first intersect.
+    /**Parsing the response. I'm only interested in the first
+     * 5 days. that a potential crossover could have occurred.
      * @param response
+     * @return Two data sets each containing 5 days worth of data points
      */
-    private static void parseResponse(List<JsonObject> response){
+    protected static List< List<SMADataPoint> > parseResponse(List<JsonObject> response){
         LOG.info("parsing the Response");
         List< List<SMADataPoint> > dataPoints = new ArrayList<>();
         //parse the response
@@ -103,12 +104,16 @@ public class SimpleMovingAverageCrossover {
                     dataPoints.add(data);
                 }
         );
-        analyseForIntersection(dataPoints);
-
+        return dataPoints;
     }
 
-    private static void analyseForIntersection(List< List<SMADataPoint> > data){
-        //Todo find out how to examine both data sets and find the intersect within 0.01. Save off the symbol and write to maybe csv or email to myself.
+    /**Examine both data sets and try to find the intersection within 0.01
+     * @param data
+     * @return true if the data sets have an intersection: otherwise return false
+     */
+    protected static boolean analyseForIntersection(List< List<SMADataPoint> > data){
+        LOG.info("Starting the analysis for both set of data");
+
         if(data != null && data.size() == 2) {
             List<SMADataPoint> firstDataPoints = data.get(0);
             List<SMADataPoint> secondDataPoints = data.get(1);
@@ -118,10 +123,11 @@ public class SimpleMovingAverageCrossover {
             for ( int i = 0; i < firstDataPoints.size(); i++){
                 difference = Math.abs(firstDataPoints.get(i).getSimpleMovingAverage() - secondDataPoints.get(i).getSimpleMovingAverage());
                 if(difference <= THRESHOLD){
-
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public static void main(String[] args) {
@@ -133,6 +139,7 @@ public class SimpleMovingAverageCrossover {
 
         //List of all the stock symbols
         Set<StockSymbol> stockSymbols = getStockSymbols(new CsvReader(), args[0]);
+        Set<StockSymbol> stocksToEmail = new HashSet<>();
 
         stockSymbols.forEach(
                 symbol -> {
@@ -143,9 +150,16 @@ public class SimpleMovingAverageCrossover {
                     //make the call and get a response
                     List<JsonObject> response = webService(new AlphaVantageWebClient(queries));
 
-                    //parse the response to find where the cross over occurred
-                    parseResponse(response);
+                    //parse the response to get two List of SMADataPonits
+                    List< List<SMADataPoint> > parsedResponse = parseResponse(response);
+
+                    //find where the cross over occurred
+                    if(analyseForIntersection(parsedResponse)){
+                        stocksToEmail.add(symbol);
+                    }
                 }
         );
+
+        //Todo email the symbols to myself
     }
 }
