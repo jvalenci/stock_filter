@@ -14,16 +14,25 @@ import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
 import com.jvalenc.stock.web.rest.IWebClient;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.*;
 
 /**
  * Created by jonat on 11/12/2017.
  */
 public class SimpleMovingAverageCrossover {
+//todo 1. We could move the response to its own class as well as the email client. Seems to be working now.
     private static Logger LOG = Logger.getLogger(SimpleMovingAverageCrossover.class);
+    private static Properties mailServerProperties;
+    private static Session getMailSession;
+    private static MimeMessage generateMailMessage;
+    private static final String USERNAME = "jonathan.valencia716@gmail.com";
+    private static final String PASSWORD = "9129669jvad";
 
     /**
      * For the purpose of simple moving average cross over we need two queries.
@@ -83,27 +92,34 @@ public class SimpleMovingAverageCrossover {
      * @return Two data sets each containing 5 days worth of data points
      */
     protected static List< List<SMADataPoint> > parseResponse(List<JsonObject> response){
-        LOG.info("parsing the Response");
-        List< List<SMADataPoint> > dataPoints = new ArrayList<>();
-        //parse the response
-        response.forEach(
-                jsonObject -> {
-                    List<SMADataPoint> data = new ArrayList<SMADataPoint>();
-                    LOG.info(jsonObject.get("Technical Analysis: SMA"));
-                    JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
 
-                    for(int i = 0; i < 5; i++){
-                        SMADataPoint point = new SMADataPoint();
-                        String timeStamp = jsonTechAna.names().get(i);
-                        String sma = jsonTechAna.get(timeStamp).asObject().get("SMA").asString();
-                        point.setTimeStamp(timeStamp);
-                        point.setSimpleMovingAverage(Double.parseDouble(sma));
-                        LOG.info(timeStamp + " : " + sma);
-                        data.add(point);
-                    }
-                    dataPoints.add(data);
-                }
-        );
+        LOG.info("parsing the Response \n" + response.toString());
+
+        List< List<SMADataPoint> > dataPoints = new ArrayList<>();
+
+        if(response.size() == 2 && response != null) {
+            if( response.get(0).size() >= 5 && response.get(1).size() >= 5) {
+                //parse the response
+                response.forEach(
+                        jsonObject -> {
+                            List<SMADataPoint> data = new ArrayList<SMADataPoint>();
+                            LOG.debug(jsonObject.get("Technical Analysis: SMA"));
+                            JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
+
+                            for (int i = 0; i < 5; i++) {
+                                SMADataPoint point = new SMADataPoint();
+                                String timeStamp = jsonTechAna.names().get(i);
+                                String sma = jsonTechAna.get(timeStamp).asObject().get("SMA").asString();
+                                point.setTimeStamp(timeStamp);
+                                point.setSimpleMovingAverage(Double.parseDouble(sma));
+                                LOG.debug(timeStamp + " : " + sma);
+                                data.add(point);
+                            }
+                            dataPoints.add(data);
+                        }
+                );
+            }
+        }
         return dataPoints;
     }
 
@@ -114,20 +130,79 @@ public class SimpleMovingAverageCrossover {
     protected static boolean analyseForIntersection(List< List<SMADataPoint> > data){
         LOG.info("Starting the analysis for both set of data");
 
-        if(data != null && data.size() == 2) {
-            List<SMADataPoint> firstDataPoints = data.get(0);
-            List<SMADataPoint> secondDataPoints = data.get(1);
-            List<SMADataPoint> symbolsThatHaveAnIntersection = new ArrayList<>();
-            final double THRESHOLD = 0.01;
-            double difference;
-            for ( int i = 0; i < firstDataPoints.size(); i++){
-                difference = Math.abs(firstDataPoints.get(i).getSimpleMovingAverage() - secondDataPoints.get(i).getSimpleMovingAverage());
-                if(difference <= THRESHOLD){
-                    return true;
+        if(data != null && data.size() == 2 ) {
+            if(data.get(0).size() > 0 && data.get(1).size() > 0) {
+                List<SMADataPoint> firstDataPoints = data.get(0);
+                List<SMADataPoint> secondDataPoints = data.get(1);
+                final double THRESHOLD = 0.01;
+                double difference;
+                for (int i = 0; i < firstDataPoints.size(); i++) {
+                    difference = Math.abs(firstDataPoints.get(i).getSimpleMovingAverage() - secondDataPoints.get(i).getSimpleMovingAverage());
+                    if (difference <= THRESHOLD) {
+                        LOG.info("Analysis has found an intersection.");
+                        return true;
+                    }
                 }
             }
         }
+        LOG.info("Analysis found no intersection.");
         return false;
+    }
+
+    /** Sends an email to me with the stocks that have an intersection
+     * @param stockSymbols
+     * @return true if the method ran all the way through indicating that an email was sent.
+     * @throws MessagingException
+     */
+    public static boolean generateAndSendEmail(Set<StockSymbol> stockSymbols) throws MessagingException {
+
+    //todo be able to send multiple people email from a properties file
+        // Step1
+        LOG.info("1st ===> setup Mail Server Properties..");
+        mailServerProperties = System.getProperties();
+        mailServerProperties.put("mail.smtp.port", "587");
+        mailServerProperties.put("mail.smtp.auth", "true");
+        mailServerProperties.put("mail.smtp.starttls.enable", "true");
+        LOG.info("Mail Server Properties have been setup successfully..");
+
+        // Step2
+        LOG.info("2nd ===> get Mail Session..");
+        getMailSession = Session.getDefaultInstance(mailServerProperties, null);
+        generateMailMessage = new MimeMessage(getMailSession);
+        generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress("jonathan.valencia716@gmail.com"));
+//        generateMailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress("test2@crunchify.com"));
+        generateMailMessage.setSubject("Simple Moving Average Crossover");
+        String emailBody = generateEmailBody(stockSymbols);
+        generateMailMessage.setContent(emailBody, "text/html");
+        LOG.info("Mail Session has been created successfully..");
+
+        // Step3
+        LOG.info("\n\n 3rd ===> Get Session and Send mail");
+        Transport transport = getMailSession.getTransport("smtp");
+
+        // Enter your correct gmail UserID and Password
+        // if you have 2FA enabled then provide App Specific Password
+        transport.connect("smtp.gmail.com", USERNAME, PASSWORD);
+        transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients());
+        LOG.info("Mail sent. Closing session.");
+        transport.close();
+        return true;
+    }
+
+    private static String generateEmailBody(Set<StockSymbol> stockSymbols){
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("These are the stocks that it's 8 SMA and 23 SMA have intersected.");
+        sb.append("<br><br>");
+        sb.append("<ol>");
+        stockSymbols.forEach(
+                symbol -> {
+                    sb.append("<li>" + symbol.getSymbol() + "</li>");
+                }
+        );
+        sb.append("</ol>");
+
+        return sb.toString();
     }
 
     public static void main(String[] args) {
@@ -160,6 +235,10 @@ public class SimpleMovingAverageCrossover {
                 }
         );
 
-        //Todo email the symbols to myself
+        try {
+            generateAndSendEmail(stocksToEmail);
+        }catch (MessagingException ex){
+            LOG.error("The email was unsuccessful", ex);
+        }
     }
 }

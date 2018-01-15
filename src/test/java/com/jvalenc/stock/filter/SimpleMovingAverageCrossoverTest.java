@@ -2,14 +2,18 @@ package com.jvalenc.stock.filter;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import com.jvalenc.stock.models.QueryCriteria;
 import com.jvalenc.stock.models.SMADataPoint;
+import com.jvalenc.stock.models.StockSymbol;
 import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
 import com.jvalenc.stock.web.rest.IWebClient;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -18,6 +22,25 @@ import static org.mockito.Mockito.mock;
  * Created by jonat on 1/14/2018.
  */
 public class SimpleMovingAverageCrossoverTest {
+
+    @Test
+    public void generateAndSendEmail() throws Exception {
+
+        //Arrange
+        boolean expected = true;
+        boolean actual;
+        Set<StockSymbol> stockSymbols = new HashSet<>();
+        for(int i = 0; i < 5; i++){
+            stockSymbols.add(new StockSymbol("testSymbol " + i));
+        }
+
+        //Act
+        actual = SimpleMovingAverageCrossover.generateAndSendEmail(stockSymbols);
+
+        //Assert
+        Assert.assertTrue(actual == expected);
+    }
+
     @Test
     public void parseResponse() throws Exception {
 
@@ -78,7 +101,13 @@ public class SimpleMovingAverageCrossoverTest {
         Assert.assertTrue(actual == expected);
     }
 
+    //If I'm getting an error I can use this test case to see what the response is. Not an actual test.
+    @Test
+    public void integrationThruParseResponse() throws Exception {
+        List<QueryCriteria> queryCriterias = SimpleMovingAverageCrossover.queryBuilder(new StockSymbol("SMED"));
+        IWebClient<JsonObject> webClient = new AlphaVantageWebClient(queryCriterias);
+        List<JsonObject> response = SimpleMovingAverageCrossover.webService(webClient);
+        List< List<SMADataPoint> > parsedResponse = SimpleMovingAverageCrossover.parseResponse(response);
 
-
-
+    }
 }
