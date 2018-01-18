@@ -86,9 +86,12 @@ public class SimpleMovingAverageCrossover {
         return webClient.getResponses();
     }
 
-    private static int getResponseValueSize(JsonObject response){
-        JsonObject sizeObject = response.get("Technical Analysis: SMA").asObject();
-        int size = sizeObject.size();
+    private static int getResponseValueSize(final JsonObject response){
+        int size = 0;
+        if(!response.isEmpty()) {
+            JsonObject sizeObject = response.get("Technical Analysis: SMA").asObject();
+            size = sizeObject.size();
+        }
         return size;
     }
 
