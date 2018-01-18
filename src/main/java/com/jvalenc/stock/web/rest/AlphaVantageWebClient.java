@@ -103,7 +103,7 @@ public class AlphaVantageWebClient implements IWebClient<JsonObject>{
                     });
             logger.info("Successfully sent requests to AlphaVantage");
             //API requirements to have a one sec interval between calls.
-            //Thread.sleep(1000);
+            Thread.sleep(1000);
         }else{
             logger.error("Requests were null or wrong number of request. 2 are need.");
         }
