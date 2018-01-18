@@ -86,6 +86,12 @@ public class SimpleMovingAverageCrossover {
         return webClient.getResponses();
     }
 
+    private static int getResponseValueSize(JsonObject response){
+        JsonObject sizeObject = response.get("Technical Analysis: SMA").asObject();
+        int size = sizeObject.size();
+        return size;
+    }
+
     /**Parsing the response. I'm only interested in the first
      * 5 days. that a potential crossover could have occurred.
      * @param response
@@ -98,7 +104,7 @@ public class SimpleMovingAverageCrossover {
         List< List<SMADataPoint> > dataPoints = new ArrayList<>();
 
         if(response.size() == 2 && response != null) {
-            if( response.get(0).size() >= 5 && response.get(1).size() >= 5) {
+            if( getResponseValueSize(response.get(0)) >= 5 && getResponseValueSize(response.get(1)) >= 5) {
                 //parse the response
                 response.forEach(
                         jsonObject -> {
