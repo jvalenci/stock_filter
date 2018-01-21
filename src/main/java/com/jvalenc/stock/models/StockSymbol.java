@@ -16,6 +16,21 @@ public class StockSymbol {
                 '}';
     }
 
+    @Override
+    public int hashCode() {
+        return symbol.hashCode();
+    }
+
+    /**Compare the two symbols
+     * @param obj
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj) {
+        StockSymbol compare = (StockSymbol) obj;
+        return this.symbol.equals(compare.getSymbol());
+    }
+
     /**
      * @return
      */
