@@ -28,9 +28,9 @@ public class CsvReader implements ICsvReader<StockSymbol> {
     private final String STOCK_SYMBOL = "Symbol";
 
     @Override
-    public Set<StockSymbol> readCsvDirectory(String directoyfileNmae){
+    public List<StockSymbol> readCsvDirectory(String directoyfileNmae){
         File file = new File(directoyfileNmae);
-        Set<StockSymbol> stockTickers = new HashSet<>();
+        List<StockSymbol> stockTickers = new ArrayList<>();
         if(file.isDirectory() && file.listFiles().length > 0){
             Arrays.stream(file.listFiles()).forEach( path->
                     stockTickers.addAll(readCsvFile(path.getAbsolutePath())));
@@ -41,14 +41,14 @@ public class CsvReader implements ICsvReader<StockSymbol> {
     /**
      * @param filename
      */
-    private List<StockSymbol> readCsvFile(String filename){
+    private Set<StockSymbol> readCsvFile(String filename){
 
         FileReader fileReader = null;
         CSVParser csvFileParser = null;
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
 
         //list of stock ticker to be filled by the csv
-        List<StockSymbol> stockTickers = new ArrayList();
+        Set<StockSymbol> stockTickers = new HashSet<>();
 
         try{
 

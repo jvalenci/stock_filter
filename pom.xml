@@ -8,6 +8,8 @@
     <artifactId>simple-moving-average</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <packaging>jar</packaging>
+
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>
@@ -53,7 +55,9 @@
         </dependency>
     </dependencies>
     <build>
+        <finalName>stock-filter</finalName>
         <plugins>
+            <!--Set the targeted compiler-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -62,6 +66,48 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <!--<plugin>-->
+                <!--&lt;!&ndash;Make the jar executable &ndash;&gt;-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-jar-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--&lt;!&ndash; DO NOT include log4j.properties file in your Jar &ndash;&gt;-->
+                    <!--<excludes>-->
+                        <!--<exclude>**/log4j.properties</exclude>-->
+                    <!--</excludes>-->
+                    <!--<archive>-->
+                        <!--<manifest>-->
+                            <!--<addClasspath>true</addClasspath>-->
+                            <!--&lt;!&ndash; Jar file entry point &ndash;&gt;-->
+                            <!--<mainClass>com.jvalenc.stock.filter.SimpleMovingAverageCrossover.java</mainClass>-->
+                        <!--</manifest>-->
+                    <!--</archive>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>
+                                        com.jvalenc.stock.filter.SimpleMovingAverageCrossover
+                                    </mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

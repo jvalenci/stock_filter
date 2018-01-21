@@ -7,5 +7,5 @@ import java.util.Set;
  * Created by jonat on 1/13/2018.
  */
 public interface ICsvReader<T> {
-    Set<T> readCsvDirectory(String directory);
+    List<T> readCsvDirectory(String directory);
 }

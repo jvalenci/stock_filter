@@ -100,10 +100,17 @@ public class AlphaVantageWebClient implements IWebClient<JsonObject>{
                         } catch (IOException e) {
                             logger.error("There was an error with the requests string: " + e.getMessage());
                         }
+                        try {
+                            //logger.info("sleeping...");
+                            //API requirements to have a one sec interval between calls.
+                            Thread.sleep(2000);
+                            //logger.info("awake...");
+                        }catch (InterruptedException e){
+                            logger.error(e);
+                        }
                     });
             logger.info("Successfully sent requests to AlphaVantage");
-            //API requirements to have a one sec interval between calls.
-            Thread.sleep(1000);
+
         }else{
             logger.error("Requests were null or wrong number of request. 2 are need.");
         }

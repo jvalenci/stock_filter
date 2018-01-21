@@ -68,7 +68,7 @@ public class SimpleMovingAverageCrossover {
      * @param directoryFileName
      * @return
      */
-    protected static Set<StockSymbol> getStockSymbols(ICsvReader<StockSymbol> csvReader, String directoryFileName){
+    protected static List<StockSymbol> getStockSymbols(ICsvReader<StockSymbol> csvReader, String directoryFileName){
         return csvReader.readCsvDirectory(directoryFileName);
     }
 
@@ -112,7 +112,7 @@ public class SimpleMovingAverageCrossover {
                 response.forEach(
                         jsonObject -> {
                             List<SMADataPoint> data = new ArrayList<SMADataPoint>();
-                            LOG.debug(jsonObject.get("Technical Analysis: SMA"));
+                            //LOG.debug(jsonObject.get("Technical Analysis: SMA"));
                             JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
 
                             for (int i = 0; i < 5; i++) {
@@ -121,7 +121,7 @@ public class SimpleMovingAverageCrossover {
                                 String sma = jsonTechAna.get(timeStamp).asObject().get("SMA").asString();
                                 point.setTimeStamp(timeStamp);
                                 point.setSimpleMovingAverage(Double.parseDouble(sma));
-                                LOG.debug(timeStamp + " : " + sma);
+                                //LOG.debug(timeStamp + " : " + sma);
                                 data.add(point);
                             }
                             dataPoints.add(data);
@@ -222,30 +222,47 @@ public class SimpleMovingAverageCrossover {
         }
 
         //List of all the stock symbols
-        Set<StockSymbol> stockSymbols = getStockSymbols(new CsvReader(), args[0]);
+        List<StockSymbol> stockSymbols = getStockSymbols(new CsvReader(), args[0]);
         Set<StockSymbol> stocksToEmail = new HashSet<>();
 
-        stockSymbols.forEach(
-                symbol -> {
+        for(int i = 0; i < stockSymbols.size(); i++){
+            StockSymbol symbol = stockSymbols.get(i);
+            try {
+                //build query
+                List<QueryCriteria> queries = queryBuilder(symbol);
 
-                    //build query
-                    List<QueryCriteria> queries = queryBuilder(symbol);
+                //make the call and get a response
+                List<JsonObject> response = webService(new AlphaVantageWebClient(queries));
 
-                    //make the call and get a response
-                    List<JsonObject> response = webService(new AlphaVantageWebClient(queries));
+                //parse the response to get two List of SMADataPonits
+                List<List<SMADataPoint>> parsedResponse = parseResponse(response);
 
-                    //parse the response to get two List of SMADataPonits
-                    List< List<SMADataPoint> > parsedResponse = parseResponse(response);
-
-                    //find where the cross over occurred
-                    if(analyseForIntersection(parsedResponse)){
-                        stocksToEmail.add(symbol);
-                    }
+                //find where the cross over occurred
+                if (analyseForIntersection(parsedResponse)) {
+                    stocksToEmail.add(symbol);
                 }
-        );
 
+                //This is just a loading symbol
+                StringBuilder sb = new StringBuilder();
+                sb.append("LOADING:");
+                sb.append(" ");
+                float percentage = ((i * 100.0f)/stockSymbols.size());
+                sb.append(String.format("%.02f", percentage));
+                sb.append("% Completed");
+                LOG.info(sb.toString());
+
+            } catch (Exception e) {
+                LOG.error("Api Might have thrown an error for call frequency. break and try to send stocks to email if there is any.");
+                break;
+            }
+        }
+//todo I need to sanitize my information since I'm getting dups in the email
         try {
-            generateAndSendEmail(stocksToEmail);
+            if(stocksToEmail.size() > 0) {
+                generateAndSendEmail(stocksToEmail);
+            }else {
+                LOG.info("There were no stocks with an intersection found.");
+            }
         }catch (MessagingException ex){
             LOG.error("The email was unsuccessful", ex);
         }

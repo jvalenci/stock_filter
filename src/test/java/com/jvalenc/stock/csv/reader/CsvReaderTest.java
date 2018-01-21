@@ -19,7 +19,7 @@ public class CsvReaderTest {
         CsvReader csvReader = new CsvReader();
 
         //Act
-        Set<StockSymbol> stockTickers = csvReader.readCsvDirectory(directoryFileName);
+        List<StockSymbol> stockTickers = csvReader.readCsvDirectory(directoryFileName);
 
         //Assert
         Assert.assertTrue(stockTickers.size() > 0);
