@@ -19,7 +19,7 @@ public class SMADataPoint {
     }
 
     public void setTimeStamp(String timeStamp) {
-        //logger.info("parsing date string");
+        logger.info("parsing date string");
         try{
             SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
             this.timeStamp = ft.parse(timeStamp);

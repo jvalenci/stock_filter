@@ -103,7 +103,7 @@ public class AlphaVantageWebClient implements IWebClient<JsonObject>{
                         try {
                             //logger.info("sleeping...");
                             //API requirements to have a one sec interval between calls.
-                            Thread.sleep(2000);
+                            Thread.sleep(5000);
                             //logger.info("awake...");
                         }catch (InterruptedException e){
                             logger.error(e);

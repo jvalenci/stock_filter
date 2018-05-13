@@ -8,6 +8,7 @@ import com.jvalenc.stock.models.StockSymbol;
 import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
 import com.jvalenc.stock.web.rest.IWebClient;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,15 +16,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-
 /**
  * Created by jonat on 1/14/2018.
  */
 public class SimpleMovingAverageCrossoverTest {
 
     @Test
+    @Ignore
     public void generateAndSendEmail() throws Exception {
 
         //Arrange
@@ -104,7 +103,7 @@ public class SimpleMovingAverageCrossoverTest {
     //If I'm getting an error I can use this test case to see what the response is. Not an actual test.
     @Test
     public void integrationThruParseResponse() throws Exception {
-        List<QueryCriteria> queryCriterias = SimpleMovingAverageCrossover.queryBuilder(new StockSymbol("SMED"));
+        List<QueryCriteria> queryCriterias = SimpleMovingAverageCrossover.queryBuilder(new StockSymbol("patk"));
         IWebClient<JsonObject> webClient = new AlphaVantageWebClient(queryCriterias);
         List<JsonObject> response = SimpleMovingAverageCrossover.webService(webClient);
         List< List<SMADataPoint> > parsedResponse = SimpleMovingAverageCrossover.parseResponse(response);
