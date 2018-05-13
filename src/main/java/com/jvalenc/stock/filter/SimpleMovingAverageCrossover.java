@@ -20,6 +20,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -33,6 +34,27 @@ public class SimpleMovingAverageCrossover {
     private static MimeMessage generateMailMessage;
     private static final String USERNAME = "jonathan.valencia716@gmail.com";
     private static final String PASSWORD = "9129669jvad";
+    private static final List<String> subscribers = getSubscribers();
+
+    private static List<String> getSubscribers(){
+        Set<String> subscribers = new HashSet<>();
+        File file = new File("C:\\Users\\jonat\\IdeaProjects\\stock-filter\\src\\main\\resources\\subscribers.csv");
+        if(file.exists()){
+            try(FileReader fileReader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+                String line;
+                while((line =  bufferedReader.readLine()) != null){
+                    subscribers.add(line.trim());
+                }
+            } catch (FileNotFoundException e){
+                LOG.error("File " + file.getPath() + " not found", e);
+            } catch (IOException e) {
+                LOG.error(e);
+            }
+
+        }
+        return Collections.unmodifiableList(Arrays.asList(subscribers.toArray(new String[]{})));
+    }
 
     /**
      * For the purpose of simple moving average cross over we need two queries.
@@ -112,7 +134,7 @@ public class SimpleMovingAverageCrossover {
                 response.forEach(
                         jsonObject -> {
                             List<SMADataPoint> data = new ArrayList<SMADataPoint>();
-                            //LOG.debug(jsonObject.get("Technical Analysis: SMA"));
+                            LOG.debug(jsonObject.get("Technical Analysis: SMA"));
                             JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
 
                             for (int i = 0; i < 5; i++) {
@@ -121,7 +143,7 @@ public class SimpleMovingAverageCrossover {
                                 String sma = jsonTechAna.get(timeStamp).asObject().get("SMA").asString();
                                 point.setTimeStamp(timeStamp);
                                 point.setSimpleMovingAverage(Double.parseDouble(sma));
-                                //LOG.debug(timeStamp + " : " + sma);
+                                LOG.debug(timeStamp + " : " + sma);
                                 data.add(point);
                             }
                             dataPoints.add(data);
@@ -178,7 +200,10 @@ public class SimpleMovingAverageCrossover {
         LOG.info("2nd ===> get Mail Session..");
         getMailSession = Session.getDefaultInstance(mailServerProperties, null);
         generateMailMessage = new MimeMessage(getMailSession);
-        generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress("jonathan.valencia716@gmail.com"));
+
+        for(String email : subscribers){
+            generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+        }
 //        generateMailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress("test2@crunchify.com"));
         generateMailMessage.setSubject("Simple Moving Average Crossover");
         String emailBody = generateEmailBody(stockSymbols);
@@ -252,11 +277,10 @@ public class SimpleMovingAverageCrossover {
                 LOG.info(sb.toString());
 
             } catch (Exception e) {
-                LOG.error("Api Might have thrown an error for call frequency. break and try to send stocks to email if there is any.");
+                LOG.error("Api Might have thrown an error for call frequency. break and try to send stocks to email if there is any: " + e);
                 break;
             }
         }
-//todo I need to sanitize my information since I'm getting dups in the email
         try {
             if(stocksToEmail.size() > 0) {
                 generateAndSendEmail(stocksToEmail);
