@@ -1,0 +1,19 @@
+package com.jvalenc.stock.util.enums;
+
+public enum  Trend {
+    DOWN("DOWN"),
+    UP("UP");
+
+    Trend(String value) {
+        this.value = value;
+    }
+    private String value;
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+}

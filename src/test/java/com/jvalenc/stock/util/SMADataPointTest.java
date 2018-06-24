@@ -15,9 +15,8 @@ public class SMADataPointTest {
     public void getAndSetTimeStamp() throws Exception {
 
         //arrange
-        SMADataPoint smaDataPoint = new SMADataPoint();
+        SMADataPoint smaDataPoint = new SMADataPoint(12, "2017-11-10");
         //act
-        smaDataPoint.setTimeStamp("2017-11-10");
         Date actual = smaDataPoint.getTimeStamp();
         //assert
         assertNotNull(actual);
@@ -28,11 +27,11 @@ public class SMADataPointTest {
     public void getAndSetSimpleMovingAverage() throws Exception {
 
         //arrange
-        SMADataPoint smaDataPoint = new SMADataPoint();
-        //act
         double expected = 12.2432;
-        smaDataPoint.setSimpleMovingAverage(expected);
-        double actual = smaDataPoint.getSimpleMovingAverage();
+        SMADataPoint smaDataPoint = new SMADataPoint(12.2432, "2017-11-10");
+        //act
+        smaDataPoint.setValue(expected);
+        double actual = smaDataPoint.getValue();
         //assert
         assertNotNull(actual);
         assertTrue("Values are not the same", actual == expected);

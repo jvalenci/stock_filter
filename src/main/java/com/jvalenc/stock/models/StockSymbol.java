@@ -1,10 +1,46 @@
 package com.jvalenc.stock.models;
 
+import com.jvalenc.stock.util.enums.Trend;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by jonat on 1/13/2018.
  */
 public class StockSymbol {
     private String symbol;
+    private Trend trend;
+    private boolean hasSMACrossover;
+    private boolean hasWillR;
+
+    public boolean isHasSMACrossover() {
+        return hasSMACrossover;
+    }
+
+    public void setHasSMACrossover(boolean hasSMACrossover) {
+        this.hasSMACrossover = hasSMACrossover;
+    }
+
+    public boolean isHasWillR() {
+        return hasWillR;
+    }
+
+    public void setHasWillR(boolean hasWillR) {
+        this.hasWillR = hasWillR;
+    }
+
+    public boolean hasIndicator() {
+        return isHasSMACrossover() || isHasWillR();
+    }
+
+    public Trend getTrend() {
+        return trend;
+    }
+
+    public void setTrend(Trend trend) {
+        this.trend = trend;
+    }
 
     /**
      * @return

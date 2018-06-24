@@ -2,7 +2,7 @@ package com.jvalenc.stock.filter;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
-import com.jvalenc.stock.models.QueryCriteria;
+import com.jvalenc.stock.email.client.EmailClient;
 import com.jvalenc.stock.models.SMADataPoint;
 import com.jvalenc.stock.models.StockSymbol;
 import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
@@ -34,7 +34,7 @@ public class SimpleMovingAverageCrossoverTest {
         }
 
         //Act
-        actual = SimpleMovingAverageCrossover.generateAndSendEmail(stockSymbols);
+        actual = EmailClient.generateAndSendEmail(stockSymbols);
 
         //Assert
         Assert.assertTrue(actual == expected);
@@ -45,6 +45,7 @@ public class SimpleMovingAverageCrossoverTest {
 
         //Arrange
         List<JsonObject> response = new ArrayList<>();
+        SimpleMovingAverageCrossover smaCrossover = new SimpleMovingAverageCrossover(AlphaVantageWebClient.getInstance());
         List< List<SMADataPoint> > actual;
         JsonObject firstDataSet = Json.parse("{\"Meta Data\":{\"1: Symbol\":\"TRNS\",\"2: Indicator\":\"Simple Moving Average (SMA)\",\"3: Last Refreshed\":\"2018-01-12\",\"4: Interval\":\"daily\",\"5: Time Period\":8,\"6: Series Type\":\"close\",\"7: Time Zone\":\"US/Eastern\"},\"Technical Analysis: SMA\":{\"2018-01-12\":{\"SMA\":\"13.7500\"},\"2018-01-11\":{\"SMA\":\"13.7813\"},\"2018-01-10\":{\"SMA\":\"13.8063\"},\"2018-01-09\":{\"SMA\":\"13.8438\"},\"2018-01-08\":{\"SMA\":\"13.8813\"}}}").asObject();
         JsonObject secondDataSet = Json.parse("{\"Meta Data\":{\"1: Symbol\":\"TRNS\",\"2: Indicator\":\"Simple Moving Average (SMA)\",\"3: Last Refreshed\":\"2018-01-12\",\"4: Interval\":\"daily\",\"5: Time Period\":23,\"6: Series Type\":\"close\",\"7: Time Zone\":\"US/Eastern\"},\"Technical Analysis: SMA\":{\"2018-01-12\":{\"SMA\":\"13.6454\"},\"2018-01-11\":{\"SMA\":\"13.6345\"},\"2018-01-10\":{\"SMA\":\"13.6345\"},\"2018-01-09\":{\"SMA\":\"13.6498\"},\"2018-01-08\":{\"SMA\":\"13.6563\"}}}").asObject();
@@ -52,7 +53,7 @@ public class SimpleMovingAverageCrossoverTest {
         response.add(secondDataSet);
 
         //Act
-        actual = SimpleMovingAverageCrossover.parseResponse(response);
+        actual = smaCrossover.parseResponse(response);
 
         //Assert
         Assert.assertTrue(actual.size() == 2);
@@ -62,6 +63,8 @@ public class SimpleMovingAverageCrossoverTest {
     public void analyseForIntersectionFail() throws Exception {
 
         //Arrange
+        SimpleMovingAverageCrossover simpleMovingAverageCrossover = new SimpleMovingAverageCrossover(AlphaVantageWebClient.getInstance());
+        StockSymbol stockSymbol = new StockSymbol("AAPL");
         boolean expected = false;
         boolean actual;
         List<JsonObject> response = new ArrayList<>();
@@ -70,19 +73,21 @@ public class SimpleMovingAverageCrossoverTest {
         JsonObject secondDataSet = Json.parse("{\"Meta Data\":{\"1: Symbol\":\"TRNS\",\"2: Indicator\":\"Simple Moving Average (SMA)\",\"3: Last Refreshed\":\"2018-01-12\",\"4: Interval\":\"daily\",\"5: Time Period\":23,\"6: Series Type\":\"close\",\"7: Time Zone\":\"US/Eastern\"},\"Technical Analysis: SMA\":{\"2018-01-12\":{\"SMA\":\"13.6454\"},\"2018-01-11\":{\"SMA\":\"13.6345\"},\"2018-01-10\":{\"SMA\":\"13.6345\"},\"2018-01-09\":{\"SMA\":\"13.6498\"},\"2018-01-08\":{\"SMA\":\"13.6563\"}}}").asObject();
         response.add(firstDataSet);
         response.add(secondDataSet);
-        argument = SimpleMovingAverageCrossover.parseResponse(response);
+        argument = simpleMovingAverageCrossover.parseResponse(response);
 
         //Act
-        actual = SimpleMovingAverageCrossover.analyseForIntersection(argument);
+        simpleMovingAverageCrossover.analyseForIntersection(argument, stockSymbol);
 
         //Assert
-        Assert.assertTrue(actual == expected);
+        Assert.assertTrue(stockSymbol.isHasSMACrossover() == expected);
     }
 
     @Test
     public void analyseForIntersectionPass() throws Exception {
 
         //Arrange
+        SimpleMovingAverageCrossover simpleMovingAverageCrossover = new SimpleMovingAverageCrossover(AlphaVantageWebClient.getInstance());
+        StockSymbol stockSymbol = new StockSymbol("AAPL");
         boolean expected = true;
         boolean actual;
         List<JsonObject> response = new ArrayList<>();
@@ -91,22 +96,24 @@ public class SimpleMovingAverageCrossoverTest {
         JsonObject secondDataSet = Json.parse("{\"Meta Data\":{\"1: Symbol\":\"TRNS\",\"2: Indicator\":\"Simple Moving Average (SMA)\",\"3: Last Refreshed\":\"2018-01-12\",\"4: Interval\":\"daily\",\"5: Time Period\":23,\"6: Series Type\":\"close\",\"7: Time Zone\":\"US/Eastern\"},\"Technical Analysis: SMA\":{\"2018-01-12\":{\"SMA\":\"13.6454\"},\"2018-01-11\":{\"SMA\":\"13.6345\"},\"2018-01-10\":{\"SMA\":\"13.6345\"},\"2018-01-09\":{\"SMA\":\"13.7498\"},\"2018-01-08\":{\"SMA\":\"13.6563\"}}}").asObject();
         response.add(firstDataSet);
         response.add(secondDataSet);
-        argument = SimpleMovingAverageCrossover.parseResponse(response);
+        argument = simpleMovingAverageCrossover.parseResponse(response);
 
         //Act
-        actual = SimpleMovingAverageCrossover.analyseForIntersection(argument);
+        simpleMovingAverageCrossover.analyseForIntersection(argument, stockSymbol);
 
         //Assert
-        Assert.assertTrue(actual == expected);
+        Assert.assertTrue(stockSymbol.isHasSMACrossover() == expected);
     }
 
     //If I'm getting an error I can use this test case to see what the response is. Not an actual test.
     @Test
+    @Ignore
     public void integrationThruParseResponse() throws Exception {
-        List<QueryCriteria> queryCriterias = SimpleMovingAverageCrossover.queryBuilder(new StockSymbol("patk"));
-        IWebClient<JsonObject> webClient = new AlphaVantageWebClient(queryCriterias);
-        List<JsonObject> response = SimpleMovingAverageCrossover.webService(webClient);
-        List< List<SMADataPoint> > parsedResponse = SimpleMovingAverageCrossover.parseResponse(response);
+        SimpleMovingAverageCrossover sma = new SimpleMovingAverageCrossover(AlphaVantageWebClient.getInstance());
+        List<String> queryCriterias = sma.queryBuilder(new StockSymbol("patk"));
+        IWebClient<JsonObject> webClient = AlphaVantageWebClient.getInstance();
+        List<JsonObject> response = webClient.send(queryCriterias);
+        List< List<SMADataPoint> > parsedResponse = sma.parseResponse(response);
 
     }
 }

@@ -34,7 +34,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>RELEASE</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -98,7 +98,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        com.jvalenc.stock.filter.SimpleMovingAverageCrossover
+                                        com.jvalenc.stock.filter.FilterDriver
                                     </mainClass>
                                 </manifest>
                             </archive>
