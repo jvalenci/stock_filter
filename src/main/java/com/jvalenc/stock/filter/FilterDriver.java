@@ -8,10 +8,10 @@ import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
 import org.apache.log4j.Logger;
 
 import javax.mail.MessagingException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class FilterDriver {
 
@@ -30,7 +30,7 @@ public class FilterDriver {
 
         //List of all the stock symbols
         List<StockSymbol> stockSymbols = Objects.requireNonNull(getStockSymbols(new CsvReader(), args[0]), "stock list cannot be null");
-        Set<StockSymbol> stocksToEmail = new TreeSet<>();
+        Set<StockSymbol> stocksToEmail = new HashSet<>();
         Indicator indicator;
 
         for(int i = 0; i < stockSymbols.size(); i++){
@@ -55,7 +55,7 @@ public class FilterDriver {
                 printLoading(i, stockSymbols.size());
 
             } catch (Exception e) {
-                logger.error("Api Might have thrown an error for call frequency. break and try to send stocks to email if there is any: " + e);
+                logger.error("Api Might have thrown an error for call frequency. break and try to send stocks to email if there are any: " + e.getMessage());
                 break;
             }
         }

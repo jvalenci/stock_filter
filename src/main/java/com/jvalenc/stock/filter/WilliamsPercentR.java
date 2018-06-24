@@ -4,6 +4,7 @@ import com.eclipsesource.json.JsonObject;
 import com.jvalenc.stock.models.StockSymbol;
 import com.jvalenc.stock.models.WillRDataPoint;
 import com.jvalenc.stock.web.rest.IWebClient;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Objects;
 
 public class WilliamsPercentR implements Indicator {
 
+    private static Logger logger = Logger.getLogger(WilliamsPercentR.class);
     private IWebClient<JsonObject> webClient;
 
     protected WilliamsPercentR(IWebClient<JsonObject> webClient) {
@@ -24,6 +26,7 @@ public class WilliamsPercentR implements Indicator {
      */
     protected List<String> queryBuilder(StockSymbol stockSymbol) {
         Objects.requireNonNull(stockSymbol);
+        logger.info("Building query for WILLR");
         StringBuilder sb = new StringBuilder();
         sb.append("function=WILLR")
                 .append("&")
@@ -45,6 +48,7 @@ public class WilliamsPercentR implements Indicator {
         Objects.requireNonNull(response, "response cannot be null");
         Objects.requireNonNull(stockSymbol, "stock symbol cannot be null");
 
+        logger.info("Parseing Response");
         //parse the response
         response.forEach(
                 jsonObject -> {
@@ -57,12 +61,14 @@ public class WilliamsPercentR implements Indicator {
                         WillRDataPoint point = new WillRDataPoint(Double.parseDouble(willr), timeStamp);
 //                                logger.debug(timeStamp + " : " + sma);
                         if(point.getValue() <= WillRDataPoint.THRESHOLD) {
+                            logger.info(stockSymbol.getSymbol() + " has a Will R <= -80");
                            stockSymbol.setHasWillR(Boolean.TRUE);
                            break;
                         }
                     }
                 }
         );
+        logger.info("Done parsing response.");
 
     }
 
@@ -72,6 +78,7 @@ public class WilliamsPercentR implements Indicator {
      */
     @Override
     public void decorateStockSymbol(StockSymbol stockSymbol) {
+        logger.info("Handling stock symbol " + stockSymbol.getSymbol());
         List<String> requests = queryBuilder(stockSymbol);
         List<JsonObject> response = webClient.send(requests);
         parseResponse(response, stockSymbol);

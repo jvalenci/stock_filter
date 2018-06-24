@@ -2,6 +2,7 @@ package com.jvalenc.stock.util.enums;
 
 public enum  Trend {
     DOWN("DOWN"),
+    UNKNOWN("UNKNOWN"),
     UP("UP");
 
     Trend(String value) {

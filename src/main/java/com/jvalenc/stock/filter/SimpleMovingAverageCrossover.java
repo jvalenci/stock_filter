@@ -112,6 +112,8 @@ public class SimpleMovingAverageCrossover implements Indicator {
                 stockSymbol.setTrend(Trend.DOWN);
             }
             logger.info("Trend has been set.");
+        } else {
+            stockSymbol.setTrend(Trend.UNKNOWN);
         }
     }
 

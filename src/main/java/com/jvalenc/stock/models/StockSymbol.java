@@ -31,7 +31,7 @@ public class StockSymbol {
     }
 
     public boolean hasIndicator() {
-        return isHasSMACrossover() || isHasWillR();
+        return (isHasSMACrossover() || isHasWillR());
     }
 
     public Trend getTrend() {
@@ -64,7 +64,13 @@ public class StockSymbol {
     @Override
     public boolean equals(Object obj) {
         StockSymbol compare = (StockSymbol) obj;
-        return this.symbol.equals(compare.getSymbol());
+        boolean equal = true;
+        if(!this.symbol.equals(compare.getSymbol()) ||
+                !this.hasWillR == compare.isHasWillR() ||
+                !this.hasSMACrossover == compare.isHasSMACrossover()) {
+            equal = false;
+        }
+        return equal;
     }
 
     /**
