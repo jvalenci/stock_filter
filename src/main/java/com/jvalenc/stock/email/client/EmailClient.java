@@ -99,15 +99,36 @@ public class EmailClient {
     private static String generateEmailBody(Set<StockSymbol> stockSymbols){
         StringBuilder sb = new StringBuilder();
 
-        sb.append("These are the stocks that it's 8 SMA and 23 SMA have intersected.");
-        sb.append("<br><br>");
-        sb.append("<ol>");
+        //header body text
+        sb.append("These are the stocks that it's 8 SMA and 23 SMA have intersected")
+                .append(" or has an indication of -80 or lower on the Williams Percent R.")
+                .append("<br><br>");
+
+        //start of table
+        sb.append("<table style=\"width: 100%;\">");
+
+        //table headers
+        sb.append("<tr>")
+                .append("<th align=\"left\">").append("Symbol    ").append("</th>")
+                .append("<th align=\"left\">").append("Trend    ").append("</th>")
+                .append("<th align=\"left\">").append("Has SMA Crossover    ").append("</th>")
+                .append("<th align=\"left\">").append("Has WillR    ").append("</th>")
+                .append("</tr>");
+
+        //table data for each symbol
         stockSymbols.forEach(
                 symbol -> {
-                    sb.append("<li>" + symbol.getSymbol() + "</li>");
+                    sb.append("<tr>")
+                            .append("<td>").append(symbol.getSymbol()).append("</td>")
+                            .append("<td>").append(symbol.getTrend().getValue()).append("</td>")
+                            .append("<td>").append(Boolean.toString(symbol.isHasSMACrossover())).append("</td>")
+                            .append("<td>").append(Boolean.toString(symbol.isHasWillR())).append("</td>")
+                            .append("</tr>");
                 }
         );
-        sb.append("</ol>");
+
+        //end of table
+        sb.append("</table>");
 
         return sb.toString();
     }

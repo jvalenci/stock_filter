@@ -5,6 +5,7 @@ import com.eclipsesource.json.JsonObject;
 import com.jvalenc.stock.email.client.EmailClient;
 import com.jvalenc.stock.models.SMADataPoint;
 import com.jvalenc.stock.models.StockSymbol;
+import com.jvalenc.stock.util.enums.Trend;
 import com.jvalenc.stock.web.rest.AlphaVantageWebClient;
 import com.jvalenc.stock.web.rest.IWebClient;
 import org.junit.Assert;
@@ -30,7 +31,17 @@ public class SimpleMovingAverageCrossoverTest {
         boolean actual;
         Set<StockSymbol> stockSymbols = new HashSet<>();
         for(int i = 0; i < 5; i++){
-            stockSymbols.add(new StockSymbol("testSymbol " + i));
+            StockSymbol stockSymbol = new StockSymbol("testSymbol " + i);
+            if( i % 2 == 0) {
+                stockSymbol.setTrend(Trend.DOWN);
+                stockSymbol.setHasWillR(true);
+                stockSymbol.setHasSMACrossover(false);
+            } else {
+                stockSymbol.setTrend(Trend.UP);
+                stockSymbol.setHasWillR(false);
+                stockSymbol.setHasSMACrossover(true);
+            }
+            stockSymbols.add(stockSymbol);
         }
 
         //Act
