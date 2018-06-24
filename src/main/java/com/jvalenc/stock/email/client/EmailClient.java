@@ -109,10 +109,10 @@ public class EmailClient {
 
         //table headers
         sb.append("<tr>")
-                .append("<th align=\"left\">").append("Symbol    ").append("</th>")
-                .append("<th align=\"left\">").append("Trend    ").append("</th>")
-                .append("<th align=\"left\">").append("Has SMA Crossover    ").append("</th>")
-                .append("<th align=\"left\">").append("Has WillR    ").append("</th>")
+                .append("<th align=\"left\">").append("Symbol").append("</th>")
+                .append("<th align=\"left\">").append("Trend").append("</th>")
+                .append("<th align=\"left\">").append("Has SMA Crossover").append("</th>")
+                .append("<th align=\"left\">").append("Has WillR").append("</th>")
                 .append("</tr>");
 
         //table data for each symbol
