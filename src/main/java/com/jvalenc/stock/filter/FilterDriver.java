@@ -47,6 +47,8 @@ public class FilterDriver {
                 indicator = new WilliamsPercentR(AlphaVantageWebClient.getInstance());
                 indicator.decorateStockSymbol(symbol);
 
+                //manditory to wait 1 minute between 5 calls to the api
+                Thread.sleep(61000);
                 if( symbol.hasIndicator()) {
                     stocksToEmail.add(symbol);
                 }
