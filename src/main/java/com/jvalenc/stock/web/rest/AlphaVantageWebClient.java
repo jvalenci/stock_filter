@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by jonat on 11/12/2017.
@@ -48,17 +49,20 @@ public class AlphaVantageWebClient implements IWebClient<JsonObject>{
         Objects.requireNonNull(requests, "Requests cannot be null.");
         List<JsonObject> responses = new ArrayList<>();
         logger.info("Sending requests to AlphaVantage");
+        AtomicInteger count = new AtomicInteger(0);
         requests.stream()
                 .map(request -> BASE_URL + request + AND + API_KEY)
                 .forEach(
                         request -> {
+
                             try {
+                                //API requirements you can only have 5 calls per minute!!! ridiculous.
+                                if (count.addAndGet(1) % 4 == 0) {
+                                    logger.info("We have reached the call limit of 5 per minute. sleeping for a minute.");
+                                    Thread.sleep(61000);
+                                }
                                 URL url = new URL(request);
                                 responses.add(Json.parse(IOUtils.toString(url, "UTF-8")).asObject());
-                                //logger.info("sleeping...");
-                                //API requirements to have a one sec interval between calls.
-                                Thread.sleep(7000);
-                                //logger.info("awake...");
                             } catch (IOException | InterruptedException e) {
                                 logger.error("There was an error with the requests string: " + e.getMessage());
                             }

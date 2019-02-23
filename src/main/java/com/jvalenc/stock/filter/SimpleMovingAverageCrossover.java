@@ -59,7 +59,7 @@ public class SimpleMovingAverageCrossover implements Indicator {
      */
     protected List<List<SMADataPoint>> parseResponse(List<JsonObject> response){
 
-        logger.info("parsing the Response \n" + response.toString());
+        logger.debug("parsing the Response \n" + response.toString());
 
         List< List<SMADataPoint> > dataPoints = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public class SimpleMovingAverageCrossover implements Indicator {
                 response.forEach(
                         jsonObject -> {
                             List<SMADataPoint> data = new ArrayList<>();
-//                            logger.debug(jsonObject.get("Technical Analysis: SMA"));
+                            logger.debug(jsonObject.get("Technical Analysis: SMA"));
                             JsonObject jsonTechAna = jsonObject.get("Technical Analysis: SMA").asObject();
 
                             for (int i = 0; i < 5; i++) {
@@ -77,7 +77,7 @@ public class SimpleMovingAverageCrossover implements Indicator {
                                 String timeStamp = jsonTechAna.names().get(i);
                                 String sma = jsonTechAna.get(timeStamp).asObject().get("SMA").asString();
                                 SMADataPoint point = new SMADataPoint(Double.parseDouble(sma), timeStamp);
-//                                logger.debug(timeStamp + " : " + sma);
+                                logger.debug(timeStamp + " : " + sma);
                                 data.add(point);
                             }
                             dataPoints.add(data);
@@ -180,8 +180,17 @@ public class SimpleMovingAverageCrossover implements Indicator {
     private int getResponseValueSize(final JsonObject response){
         int size = 0;
         if(!response.isEmpty()) {
-            JsonObject sizeObject = response.get("Technical Analysis: SMA").asObject();
-            size = sizeObject.size();
+            try {
+                JsonObject sizeObject = response.get("Technical Analysis: SMA").asObject();
+                size = sizeObject.size();
+            } catch (NullPointerException e) {
+                logger.info("fucking api bullshit. only 5 calls every minute.");
+                try {
+                    Thread.sleep(60000);
+                } catch (Exception err){
+                    logger.info("Thread sleep error");
+                }
+            }
         }
         return size;
     }

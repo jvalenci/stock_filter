@@ -48,26 +48,29 @@ public class WilliamsPercentR implements Indicator {
         Objects.requireNonNull(response, "response cannot be null");
         Objects.requireNonNull(stockSymbol, "stock symbol cannot be null");
 
-        logger.info("Parseing Response");
-        //parse the response
-        response.forEach(
-                jsonObject -> {
-//                            logger.debug(jsonObject.get("Technical Analysis: SMA"));
-                    JsonObject jsonTechAna = jsonObject.get("Technical Analysis: WILLR").asObject();
+        logger.info("Parsing Response");
+        try {
+            //parse the response
+            response.forEach(
+                    jsonObject -> {
+                        logger.debug(jsonObject.get("Technical Analysis: SMA"));
+                        JsonObject jsonTechAna = jsonObject.get("Technical Analysis: WILLR").asObject();
 
-                    for (int i = 0; i < 5; i++) {
-                        String timeStamp = jsonTechAna.names().get(i);
-                        String willr = jsonTechAna.get(timeStamp).asObject().get("WILLR").asString();
-                        WillRDataPoint point = new WillRDataPoint(Double.parseDouble(willr), timeStamp);
-//                                logger.debug(timeStamp + " : " + sma);
-                        if(point.getValue() <= WillRDataPoint.THRESHOLD) {
-                            logger.info(stockSymbol.getSymbol() + " has a Will R <= -80");
-                           stockSymbol.setHasWillR(Boolean.TRUE);
-                           break;
+                        for (int i = 0; i < 5; i++) {
+                            String timeStamp = jsonTechAna.names().get(i);
+                            String willr = jsonTechAna.get(timeStamp).asObject().get("WILLR").asString();
+                            WillRDataPoint point = new WillRDataPoint(Double.parseDouble(willr), timeStamp);
+                            if (point.getValue() <= WillRDataPoint.THRESHOLD) {
+                                logger.info(stockSymbol.getSymbol() + " has a Will R <= -80");
+                                stockSymbol.setHasWillR(Boolean.TRUE);
+                                break;
+                            }
                         }
                     }
-                }
-        );
+            );
+        } catch (NullPointerException e) {
+            logger.error("Something went wrong and a null pointer was caught.", e);
+        }
         logger.info("Done parsing response.");
 
     }
