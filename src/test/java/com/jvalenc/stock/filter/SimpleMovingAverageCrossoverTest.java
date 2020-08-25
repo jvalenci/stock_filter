@@ -12,10 +12,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by jonat on 1/14/2018.
@@ -120,11 +117,55 @@ public class SimpleMovingAverageCrossoverTest {
     @Test
     @Ignore
     public void integrationThruParseResponse() throws Exception {
-        SimpleMovingAverageCrossover sma = new SimpleMovingAverageCrossover(AlphaVantageWebClient.getInstance());
-        List<String> queryCriterias = sma.queryBuilder(new StockSymbol("patk"));
-        IWebClient<JsonObject> webClient = AlphaVantageWebClient.getInstance();
-        List<JsonObject> response = webClient.send(queryCriterias);
-        List< List<SMADataPoint> > parsedResponse = sma.parseResponse(response);
+        StockSymbol symbol = new StockSymbol("csco");
+        Indicator indicator;
+        indicator = new SimpleMovingAverageCrossover(AlphaVantageWebClient.getInstance());
+        indicator.decorateStockSymbol(symbol);
+        indicator = new WilliamsPercentR(AlphaVantageWebClient.getInstance());
+        indicator.decorateStockSymbol(symbol);
 
+    }
+
+    @Test
+    public void practiceTest() {
+        List<Integer> set = new ArrayList<>(Arrays.asList(1,5,7));
+        int index = 0;
+
+        getSubsets(set, index);
+
+
+    }
+
+    private ArrayList<ArrayList<Integer>> getSubsets ( List<Integer> set, int index){
+        ArrayList<ArrayList<Integer>> allsubsets;
+        if(set.size() == index) { //base case -add empty set
+            allsubsets = new ArrayList<ArrayList<Integer>>();
+            allsubsets.add(new ArrayList<>());
+        } else {
+            allsubsets = getSubsets(set, index + 1);
+            int item = set.get(index);
+            ArrayList<ArrayList<Integer>> moresubsets = new ArrayList<>();
+            for (ArrayList<Integer> subset : allsubsets){
+                ArrayList<Integer> newsubset = new ArrayList<>();
+                newsubset.addAll(subset);
+                newsubset.add(item);
+                moresubsets.add(newsubset);
+            }
+            allsubsets.addAll(moresubsets);
+        }
+        return allsubsets;
+    }
+
+    private ArrayList<ArrayList<Integer>> getSubsetInterative( ArrayList<Integer> set) {
+        ArrayList<ArrayList<Integer>> response = new ArrayList<>();
+        response.add(new ArrayList<>());
+        response.add(set);
+        for(int i = 0; i < set.size() ; i++) {
+            set.add(set.get(i));
+            for(int j = 0 ; j < set.size() ; j++) {
+                response.add(new ArrayList<Integer>(Arrays.asList(set.get(i), set.get(j))));
+            }
+        }
+        return response;
     }
 }

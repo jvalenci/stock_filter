@@ -17,7 +17,7 @@ public class EmailClient {
     private static final Logger logger = Logger.getLogger(EmailClient.class);
 
     private static final String USERNAME = "jonathan.valencia716@gmail.com";
-    private static final String PASSWORD = "9129669jvad";
+    private static final String PASSWORD = "eelbrkozknabajtc";
 
     /** Sends an email to me with the stocks that have an intersection
      * @param stockSymbols
